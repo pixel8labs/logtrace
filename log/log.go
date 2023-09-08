@@ -2,11 +2,10 @@ package log
 
 import (
 	"context"
-	oteltrace "go.opentelemetry.io/otel/trace"
 	"io"
 	"os"
-
 	"github.com/rs/zerolog"
+	oteltrace "go.opentelemetry.io/otel/trace"
 )
 
 type Fields map[string]any
