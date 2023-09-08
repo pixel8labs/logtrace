@@ -6,7 +6,8 @@ import (
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/propagation"
-	"go.opentelemetry.io/otel/sdk/trace"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func InitTrace(ctx context.Context) error {
@@ -17,13 +18,21 @@ func InitTrace(ctx context.Context) error {
 		return err
 	}
 
-	tp := trace.NewTracerProvider(
-		trace.WithSampler(trace.AlwaysSample()),
-		trace.WithSyncer(exporter),
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithSampler(sdktrace.AlwaysSample()),
+		sdktrace.WithSyncer(exporter),
 	)
 
 	otel.SetTracerProvider(tp)
 	otel.SetTextMapPropagator(propagation.TraceContext{})
 
 	return nil
+}
+
+func Tracer(name string) trace.Tracer {
+	return otel.Tracer(name)
+}
+
+func StartSpan(ctx context.Context, serviceName string, startName string) (context.Context, trace.Span) {
+	return otel.GetTracerProvider().Tracer(serviceName).Start(ctx, startName)
 }
