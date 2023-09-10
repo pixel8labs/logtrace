@@ -121,6 +121,7 @@ func Run(ctx context.Context, app *application.App) {
   // Middlewares
   e.Use(
     traceMiddleware.TracingMiddleware("Health-Squad-Server"),
+    traceMiddleware.Logger(),
     ...
   )
   ...
@@ -158,4 +159,4 @@ func LoadTwilio() Twilio {
   return config
 }
 ```
-<img width="959" alt="Screenshot 2023-09-08 at 13 45 28" src="https://github.com/pixel8labs/logtrace/assets/79161142/d0177dff-ffda-4dbb-9346-a2ff8d01e7e6">
+![image](https://github.com/pixel8labs/logtrace/assets/79161142/482661c2-9b8d-40a9-9c23-d43df99bc5a6)
