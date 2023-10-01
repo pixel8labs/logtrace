@@ -74,20 +74,19 @@ func Run(ctx context.Context, app *application.App) {
   }
   
   trace.Tracer("Health-Squad-Worker")
-  
-  ctx, span := trace.StartSpan(ctx, "Health-Squad-Worker", "FetchFitbit")
-  defer span.End()
 
   ...
 
   subscriber := client.Subscription(config.SubscriptionID)
   err = subscriber.Receive(ctx, func(ctx context.Context, msg *pubsub.Message) {
+    ctx, span := trace.StartSpan(ctx, "Health-Squad-Worker", "FetchFitbit")
     ...
   
     ...
   
     log.Info(ctx, log.Fields{"payload": payload}, "user fitbit data fetched successfully")
     msg.Ack()
+	span.End()
   })
   if err != nil {
     log.Error(ctx, err, log.Fields{}, "unable to receive messages")
