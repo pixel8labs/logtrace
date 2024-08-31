@@ -41,6 +41,8 @@ func (w *DataDogWriter) Write(p []byte) (int, error) {
 		return 0, fmt.Errorf("DataDogWriter http.NewRequest: %w", err)
 	}
 
+	req.Header.Set("Content-Type", "application/json")
+
 	httpRes, err := w.httpClient.Do(req)
 	if err != nil {
 		return 0, fmt.Errorf("DataDogWriter httpClient.Do: %w", err)
@@ -48,7 +50,7 @@ func (w *DataDogWriter) Write(p []byte) (int, error) {
 	if httpRes.StatusCode != http.StatusAccepted {
 		return 0, fmt.Errorf("DataDogWriter unexpected status code from DataDog: %d", httpRes.StatusCode)
 	}
-	
+
 	return len(p), nil
 }
 
