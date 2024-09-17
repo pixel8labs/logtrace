@@ -2,7 +2,7 @@ package restmiddleware
 
 import (
 	"github.com/labstack/echo/v4"
-	"go.opentelemetry.io/otel"
+	"github.com/pixel8labs/logtrace/trace"
 )
 
 // TracingMiddleware is a middleware that creates a new span for each incoming request.
@@ -10,9 +10,8 @@ import (
 func TracingMiddleware(serviceName string) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			tracer := otel.Tracer(serviceName)
 			req := c.Request()
-			ctx, span := tracer.Start(req.Context(), c.Path())
+			ctx, span := trace.StartSpan(req.Context(), serviceName, c.Path())
 
 			defer span.End()
 
