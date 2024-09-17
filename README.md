@@ -138,64 +138,6 @@ func Run(ctx context.Context, app *application.App) {
 
 ### Example on using in Server
 
-```go
-import (
-	trace "github.com/pixel8labs/logtrace/trace"
-	traceMiddleware "github.com/pixel8labs/logtrace/middleware"
-)
+See example [here](examples/echo/main.go)
 
-func Run(ctx context.Context, app *application.App) {
-  port := os.Getenv("PORT")
-  if port == "" {
-    panic("No PORT Set")
-  }
-  
-  err := trace.InitTrace(ctx)
-  if err != nil {
-    panic(err)
-  }
-  e := echo.New()
-  
-  // Middlewares
-  e.Use(
-    traceMiddleware.TracingMiddleware("Health-Squad-Server"),
-    traceMiddleware.Logger(),
-    ...
-  )
-  ...
-}
-```
-
-```go
-package config
-
-import (
-  "context"
-  
-  "github.com/kelseyhightower/envconfig"
-  "golang.org/x/exp/slices"
-  
-  log "github.com/pixel8labs/logtrace/log"
-)
-
-type Twilio struct {
-  VerificationSID string   `envconfig:"VERIFICATION_SID" required:"true"`
-  Whitelists      []string `envconfig:"WHITELISTS" required:"true"`
-}
-
-func (t Twilio) IsWhitelisted(ctx context.Context, phone string) bool {
-  whitelisted := slices.Contains(t.Whitelists, phone)
-  if whitelisted {
-    log.Info(ctx, log.Fields{"phone": phone}, "Phone is whitelisted, skipping Twilio API call")
-  }
-  return whitelisted
-}
-
-func LoadTwilio() Twilio {
-  var config Twilio
-  envconfig.MustProcess("TWILIO", &config)
-  
-  return config
-}
-```
-![image](https://github.com/pixel8labs/logtrace/assets/79161142/482661c2-9b8d-40a9-9c23-d43df99bc5a6)
+![img.png](examples/echo/img.png)
