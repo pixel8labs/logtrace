@@ -21,3 +21,25 @@ func InitTracer() {
 func StartSpan(ctx context.Context, serviceName string, spanName string) (context.Context, trace.Span) {
 	return otel.Tracer(serviceName).Start(ctx, spanName)
 }
+
+func SpanFromContext(ctx context.Context) trace.Span {
+	return trace.SpanFromContext(ctx)
+}
+
+func TraceIdAndSpanIdFromContext(ctx context.Context) (string, string) {
+	span := SpanFromContext(ctx)
+	traceId := ""
+	spanId := ""
+	if span == nil {
+		return traceId, spanId
+	}
+
+	if span.SpanContext().HasTraceID() {
+		traceId = span.SpanContext().TraceID().String()
+	}
+	if span.SpanContext().HasSpanID() {
+		spanId = span.SpanContext().SpanID().String()
+	}
+
+	return traceId, spanId
+}
