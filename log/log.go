@@ -4,8 +4,8 @@ import (
 	"context"
 	"os"
 
+	"github.com/pixel8labs/logtrace/trace"
 	"github.com/rs/zerolog"
-	oteltrace "go.opentelemetry.io/otel/trace"
 )
 
 type Fields map[string]any
@@ -58,14 +58,12 @@ func appendDefaultFields(ctx context.Context, event *zerolog.Event) *zerolog.Eve
 }
 
 func appendTraceId(ctx context.Context, event *zerolog.Event) *zerolog.Event {
-	span := oteltrace.SpanFromContext(ctx)
-	if span != nil {
-		if span.SpanContext().HasTraceID() {
-			event.Str("trace_id", span.SpanContext().TraceID().String())
-		}
-		if span.SpanContext().HasSpanID() {
-			event.Str("span_id", span.SpanContext().SpanID().String())
-		}
+	traceId, spanId := trace.TraceIdAndSpanIdFromContext(ctx)
+	if traceId != "" {
+		event.Str("trace_id", traceId)
+	}
+	if spanId != "" {
+		event.Str("span_id", spanId)
 	}
 
 	return event

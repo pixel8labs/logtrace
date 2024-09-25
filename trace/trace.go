@@ -28,7 +28,7 @@ func SpanFromContext(ctx context.Context) trace.Span {
 	return trace.SpanFromContext(ctx)
 }
 
-func TraceIdAndSpanIdFromContext(ctx context.Context) (string, string) {
+func TraceIdAndSpanIdFromContext(ctx context.Context) (_traceId string, _spanId string) {
 	span := SpanFromContext(ctx)
 	traceId := ""
 	spanId := ""
@@ -46,4 +46,10 @@ func TraceIdAndSpanIdFromContext(ctx context.Context) (string, string) {
 	return traceId, spanId
 }
 
-// TODO: implement start new span with trace_id
+func InjectTraceToMap(ctx context.Context, mapStringToString map[string]string) {
+	otel.GetTextMapPropagator().Inject(ctx, propagation.MapCarrier(mapStringToString))
+}
+
+func ExtractTraceFromMap(ctx context.Context, mapStringToString map[string]string) context.Context {
+	return otel.GetTextMapPropagator().Extract(ctx, propagation.MapCarrier(mapStringToString))
+}
