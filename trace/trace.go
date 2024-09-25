@@ -1,3 +1,5 @@
+// Package trace is a wrapper around the OpenTelemetry tracing library.
+// This provides simplified function to do something needed by Pixel8Labs (e.g. init trace, start span, extract ids).
 package trace
 
 import (
@@ -43,3 +45,5 @@ func TraceIdAndSpanIdFromContext(ctx context.Context) (string, string) {
 
 	return traceId, spanId
 }
+
+// TODO: implement start new span with trace_id
