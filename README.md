@@ -53,6 +53,12 @@ For enabling log forwarding to DataDog, we can use:
 log.Init("service-name", "env", log.WithDataDog("datadog-api-key", "datadog-log-intake-base-url"))
 ```
 
+For scrubbing sensitive keys, we can use:
+
+```go
+log.Init("service-name", "env", log.WithFieldsToScrub([]string{"password", "token"}))
+```
+
 ### Example on using in Cron
 
 ```go
