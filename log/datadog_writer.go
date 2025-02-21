@@ -3,6 +3,7 @@ package log
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 )
@@ -38,17 +39,20 @@ func (w *DataDogWriter) Write(p []byte) (int, error) {
 		bytes.NewBuffer(p),
 	)
 	if err != nil {
-		return 0, fmt.Errorf("DataDogWriter http.NewRequest: %w", err)
+		log.Println(fmt.Errorf("DataDogWriter http.NewRequest: %w", err))
+		return 0, nil
 	}
 
 	req.Header.Set("Content-Type", "application/json")
 
 	httpRes, err := w.httpClient.Do(req)
 	if err != nil {
-		return 0, fmt.Errorf("DataDogWriter httpClient.Do: %w", err)
+		log.Println(fmt.Errorf("DataDogWriter httpClient.Do: %w", err))
+		return 0, nil
 	}
 	if httpRes.StatusCode != http.StatusAccepted {
-		return 0, fmt.Errorf("DataDogWriter unexpected status code from DataDog: %d", httpRes.StatusCode)
+		log.Println(fmt.Errorf("DataDogWriter unexpected status code from DataDog: %d", httpRes.StatusCode))
+		return 0, nil
 	}
 
 	return len(p), nil
