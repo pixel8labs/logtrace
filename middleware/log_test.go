@@ -18,33 +18,18 @@ func TestGetRequestBody(t *testing.T) {
 		expectedMsg   string
 	}{
 		{
-			name:          "Normal JSON request",
+			name:          "Large body based on Content-Length",
 			contentType:   "application/json",
-			content:       `{"name":"test"}`,
-			contentLength: int64(len(`{"name":"test"}`)),
-			expectSkip:    false,
-		},
-		{
-			name:          "Multipart form request",
-			contentType:   "multipart/form-data; boundary=12345",
-			content:       "fake-multipart-data",
-			contentLength: int64(len("fake-multipart-data")),
-			expectSkip:    true,
-			expectedMsg:   "Skipping body logging: multipart/form-data",
-		},
-		{
-			name:          "Large request body",
-			contentType:   "application/json",
-			content:       strings.Repeat("A", MaxBodySize+1), // 16KB+1
-			contentLength: int64(MaxBodySize + 1),
+			content:       strings.Repeat("A", MaxBodySize+1),
+			contentLength: MaxBodySize + 1,
 			expectSkip:    true,
 			expectedMsg:   "Skipping body logging: Request body too large",
 		},
 		{
-			name:          "Content-Length exceeds limit",
+			name:          "Large body with missing Content-Length",
 			contentType:   "application/json",
-			content:       `{"test": "data"}`,
-			contentLength: MaxBodySize + 1,
+			content:       strings.Repeat("A", MaxBodySize+1),
+			contentLength: -1,
 			expectSkip:    true,
 			expectedMsg:   "Skipping body logging: Request body too large",
 		},

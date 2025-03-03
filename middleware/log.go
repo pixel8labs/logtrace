@@ -3,12 +3,10 @@ package restmiddleware
 import (
 	"bytes"
 	"encoding/json"
-	"io"
-	"net/http"
-	"strings"
-
 	"github.com/labstack/echo/v4"
 	"github.com/pixel8labs/logtrace/log"
+	"io"
+	"net/http"
 )
 
 const MaxBodySize = 16 * 1024 // 16 KB
@@ -50,10 +48,6 @@ func getObject(rawData []byte) (interface{}, bool) {
 }
 
 func getRequestBody(req *http.Request) (interface{}, string, bool) {
-	if strings.HasPrefix(req.Header.Get("Content-Type"), "multipart/form-data") {
-		return nil, "Skipping body logging: multipart/form-data", false
-	}
-
 	if req.ContentLength > MaxBodySize {
 		return nil, "Skipping body logging: Request body too large", false
 	}
