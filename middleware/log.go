@@ -3,12 +3,13 @@ package restmiddleware
 import (
 	"bytes"
 	"encoding/json"
-	"io"
-	"net/http"
-
 	"github.com/labstack/echo/v4"
 	"github.com/pixel8labs/logtrace/log"
+	"io"
+	"net/http"
 )
+
+const MaxBodySize = 16 * 1024 // 16 KB
 
 type customContext struct {
 	echo.Context
@@ -47,11 +48,20 @@ func getObject(rawData []byte) (interface{}, bool) {
 }
 
 func getRequestBody(req *http.Request) (interface{}, string, bool) {
+	if req.ContentLength > MaxBodySize {
+		return nil, "Skipping body logging: Request body too large", false
+	}
+
 	var reqBody []byte
 	if req.Body != nil {
 		reqBody, _ = io.ReadAll(req.Body)
 	}
-	req.Body = io.NopCloser(bytes.NewBuffer(reqBody)) // Reset
+
+	req.Body = io.NopCloser(bytes.NewBuffer(reqBody))
+
+	if len(reqBody) > MaxBodySize {
+		return nil, "Skipping body logging: Request body too large", false
+	}
 
 	object, ok := getObject(reqBody)
 	return object, string(reqBody), ok
@@ -69,6 +79,7 @@ func Logger() echo.MiddlewareFunc {
 				"query":   c.QueryParams(),
 				"headers": request.Header,
 			}
+
 			if body, rawString, ok := getRequestBody(request); ok {
 				reqCtx["body"] = body
 			} else {
