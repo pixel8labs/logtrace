@@ -48,14 +48,13 @@ func Init(serviceName string, env string, opts ...InitOptFn) {
 	if err != nil {
 		panic(err)
 	}
-	logFilePath := filepath.Join(logDir, "app.log")
-	logFileLocal, err := os.OpenFile(logFilePath, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
+	file, err := os.OpenFile(filepath.Join(logDir, "app.log"), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		panic(err)
 	}
-	defer logFileLocal.Close()
+	defer file.Close()
 
-	l := zerolog.New(logFileLocal).With().Timestamp().Logger()
+	l := zerolog.New(file).With().Timestamp().Logger()
 
 	logger = Logger{
 		logger:        l,
