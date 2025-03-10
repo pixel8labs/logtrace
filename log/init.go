@@ -2,7 +2,6 @@ package log
 
 import (
 	"io"
-	"net/http"
 	"os"
 	"strings"
 
@@ -18,18 +17,6 @@ type initConfig struct {
 }
 
 type InitOptFn func(config *initConfig)
-
-func WithPrettyPrint() InitOptFn {
-	return func(config *initConfig) {
-		config.writer = zerolog.ConsoleWriter{Out: os.Stdout}
-	}
-}
-
-func WithDataDogWriter(ddApiKey string, ddBaseUrl string, httpClient *http.Client) InitOptFn {
-	return func(config *initConfig) {
-		config.externalWriter = NewDataDogWriter(ddApiKey, ddBaseUrl, httpClient)
-	}
-}
 
 // WithFieldsToScrub sets the fields that should be scrubbed from the logs.
 // The fields are case-insensitive.
@@ -48,11 +35,6 @@ func Init(serviceName string, env string, opts ...InitOptFn) {
 		opt(cfg)
 	}
 
-	writer := cfg.writer
-	if cfg.externalWriter != nil {
-		writer = io.MultiWriter(writer, cfg.externalWriter)
-	}
-
 	// Convert fields to scrub to map for faster lookup.
 	fieldsToScrub := map[string]struct{}{}
 	for _, field := range cfg.fieldsToScrub {
@@ -60,12 +42,11 @@ func Init(serviceName string, env string, opts ...InitOptFn) {
 		fieldsToScrub[strings.ToLower(field)] = struct{}{}
 	}
 
-	l := zerolog.New(writer).With().Timestamp().Logger()
+	l := zerolog.New(os.Stderr).With().Timestamp().Logger()
 
 	logger = Logger{
 		logger:        l,
 		serviceName:   serviceName,
-		env:           env,
 		fieldsToScrub: fieldsToScrub,
 	}
 }

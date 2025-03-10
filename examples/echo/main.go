@@ -13,7 +13,7 @@ import (
 
 func main() {
 	// Init logger.
-	log.Init("logtrace-example", "local", log.WithPrettyPrint())
+	log.Init("logtrace-example", "local")
 
 	// Init tracer.
 	trace.InitTracer()
