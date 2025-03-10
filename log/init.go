@@ -3,6 +3,7 @@ package log
 import (
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/rs/zerolog"
@@ -26,6 +27,8 @@ func WithFieldsToScrub(fields []string) InitOptFn {
 	}
 }
 
+const logDir = "/logs"
+
 func Init(serviceName string, env string, opts ...InitOptFn) {
 	cfg := &initConfig{
 		writer:         os.Stdout,
@@ -41,8 +44,18 @@ func Init(serviceName string, env string, opts ...InitOptFn) {
 		// Use lowercase to make it case-insensitive.
 		fieldsToScrub[strings.ToLower(field)] = struct{}{}
 	}
+	err := os.MkdirAll(logDir, 0755)
+	if err != nil {
+		panic(err)
+	}
+	logFilePath := filepath.Join(logDir, "app.log")
+	logFileLocal, err := os.OpenFile(logFilePath, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
+	if err != nil {
+		panic(err)
+	}
+	defer logFileLocal.Close()
 
-	l := zerolog.New(os.Stderr).With().Timestamp().Logger()
+	l := zerolog.New(logFileLocal).With().Timestamp().Logger()
 
 	logger = Logger{
 		logger:        l,
