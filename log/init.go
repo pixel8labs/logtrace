@@ -48,7 +48,8 @@ func Init(serviceName string, env string, opts ...InitOptFn) {
 	if err != nil {
 		panic(err)
 	}
-	file, err := os.OpenFile(filepath.Join(logDir, "app.log"), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	path := filepath.Join(logDir, "app.log")
+	file, err := os.Create(path)
 	if err != nil {
 		panic(err)
 	}
