@@ -3,6 +3,7 @@ package log
 import (
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/rs/zerolog"
@@ -26,6 +27,7 @@ func WithFieldsToScrub(fields []string) InitOptFn {
 	}
 }
 
+const dir = "/tmp"
 const path = "app.log"
 
 func Init(serviceName string, env string, opts ...InitOptFn) {
@@ -43,7 +45,7 @@ func Init(serviceName string, env string, opts ...InitOptFn) {
 		// Use lowercase to make it case-insensitive.
 		fieldsToScrub[strings.ToLower(field)] = struct{}{}
 	}
-	file, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	file, err := os.OpenFile(filepath.Join(dir, path), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		panic(err)
 	}
