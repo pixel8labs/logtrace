@@ -27,7 +27,7 @@ func WithFieldsToScrub(fields []string) InitOptFn {
 	}
 }
 
-const dir = "/tmp"
+const dir = "/shared-logs"
 const path = "app.log"
 
 func Init(serviceName string, env string, opts ...InitOptFn) {
