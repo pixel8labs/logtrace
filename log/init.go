@@ -45,6 +45,9 @@ func Init(serviceName string, env string, opts ...InitOptFn) {
 		// Use lowercase to make it case-insensitive.
 		fieldsToScrub[strings.ToLower(field)] = struct{}{}
 	}
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		panic(err)
+	}
 	file, err := os.OpenFile(filepath.Join(dir, path), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		panic(err)
