@@ -58,6 +58,7 @@ func Init(serviceName string, env string, opts ...InitOptFn) {
 	logger = Logger{
 		logger:        l,
 		serviceName:   serviceName,
+		env:           env,
 		fieldsToScrub: fieldsToScrub,
 	}
 }

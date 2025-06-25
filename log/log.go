@@ -14,6 +14,7 @@ type Fields map[string]any
 type Logger struct {
 	logger        zerolog.Logger
 	serviceName   string
+	env           string
 	fieldsToScrub map[string]struct{}
 }
 
@@ -22,6 +23,7 @@ var (
 	logger = Logger{
 		logger:        zerolog.New(os.Stdout).With().Timestamp().Logger(),
 		serviceName:   os.Getenv("SERVICE_NAME"),
+		env:           os.Getenv("APP_ENV"),
 		fieldsToScrub: map[string]struct{}{},
 	}
 )
@@ -70,6 +72,7 @@ func Panic(ctx context.Context, err error, context Fields, message string, args 
 
 func appendDefaultFields(ctx context.Context, event *zerolog.Event) *zerolog.Event {
 	event = event.Str("service", logger.serviceName)
+	event = event.Str("env", logger.env)
 	event = appendTraceId(ctx, event)
 
 	return event
